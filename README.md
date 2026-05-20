@@ -2,6 +2,9 @@
 
 **A reproducible study of two backtesting artifacts that look like alpha, and three orthogonal signal layers that survive them.**
 
+Author: K. Thompson
+Sample: June 2024 – April 2026 (22 months)
+Markets: Kalshi KXHIGHCHI- (Chicago daily-high YES/NO contracts)
 This project pairs three public data sources against the **KXHIGHCHI** Kalshi market (daily high temperature, Chicago):
 
 1. **NOAA HRRR** — NWP forecast of the day's high temperature
