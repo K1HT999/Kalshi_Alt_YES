@@ -1,0 +1,142 @@
+{
+  "sizing": "flat",
+  "permutation_iters": 200,
+  "universe": {
+    "n_contracts_12pm": 203,
+    "n_contracts_2pm": 135,
+    "base_rate_12pm": 0.12315270935960591,
+    "base_rate_2pm": 0.14814814814814814,
+    "avg_ask_12pm": 0.14177339901477834,
+    "avg_ask_2pm": 0.21888888888888886,
+    "n_dates_12pm": 182,
+    "n_dates_2pm": 130,
+    "n_months": 22
+  },
+  "combined_book": {
+    "n": 57,
+    "wins": 9,
+    "losses": 48,
+    "wr": 0.15789473684210525,
+    "pnl_cents": 382.0,
+    "cost_cents": 518.0,
+    "roi": 0.7374517374517374
+  },
+  "binomial": {
+    "n": 57,
+    "wins": 9,
+    "realised_wr": 0.15789473684210525,
+    "vs_base_rate": {
+      "p_null": 0.13313609467455623,
+      "p_value": 0.3458034285810934
+    },
+    "vs_market_implied": {
+      "p_null": 0.09087719298245614,
+      "p_value": 0.07077307016948532
+    }
+  },
+  "trade_bootstrap": {
+    "B": 5000,
+    "pnl_mean": 381.9492,
+    "pnl_lo95": -150.02499999999998,
+    "pnl_hi95": 968.0249999999996,
+    "roi_mean": 0.7654472084824147,
+    "roi_lo95": -0.278856981981982,
+    "roi_hi95": 2.0120481927710845,
+    "p_pnl_pos": 0.9122
+  },
+  "monthly_bootstrap": {
+    "B": 5000,
+    "monthly_mean": 22.643282352941174,
+    "monthly_mean_lo": -16.120588235294115,
+    "monthly_mean_hi": 67.29999999999991,
+    "monthly_sharpe_mean": 0.22395794558004756,
+    "sharpe_lo95": -0.3171926852998147,
+    "sharpe_hi95": 0.6207956367269684,
+    "total_lo95": -274.04999999999995,
+    "total_hi95": 1144.0999999999985,
+    "p_mean_pos": 0.8472,
+    "p_sharpe_pos": 0.8472
+  },
+  "monthly_tests": {
+    "n_months": 17,
+    "mean_monthly_pnl": 22.470588235294116,
+    "std_monthly_pnl": 92.2002695542825,
+    "t_stat": 1.0048626670156613,
+    "t_p_one_sided": 0.1649594716063681,
+    "wilcoxon_stat": 71.0,
+    "wilcoxon_p_one_sided": 0.6027208591549444
+  },
+  "permutation": {
+    "B": 200,
+    "actual_pnl": 382.0,
+    "actual_roi": 0.7374517374517374,
+    "null_pnl_mean": -49.075,
+    "null_pnl_std": 160.52012140227154,
+    "null_pnl_q05": -299.05,
+    "null_pnl_q50": -54.0,
+    "null_pnl_q95": 221.09999999999997,
+    "null_roi_mean": -0.08094171208674428,
+    "null_roi_std": 0.2708860491315177,
+    "null_roi_q05": -0.4809688581314879,
+    "null_roi_q50": -0.09597362972649014,
+    "null_roi_q95": 0.3674555759803921,
+    "p_value_pnl": 0.005,
+    "p_value_roi": 0.005
+  },
+  "calibration": [
+    {
+      "p_bin": "(0.05, 0.1]",
+      "n": 8,
+      "mean_p": 0.08627659257910249,
+      "realised": 0.0,
+      "avg_ask": 0.058750000000000004,
+      "pnl_cents": -47.0,
+      "calibration_gap": -0.08627659257910249
+    },
+    {
+      "p_bin": "(0.1, 0.2]",
+      "n": 30,
+      "mean_p": 0.1432269528580695,
+      "realised": 0.1,
+      "avg_ask": 0.073,
+      "pnl_cents": 81.0,
+      "calibration_gap": -0.04322695285806949
+    },
+    {
+      "p_bin": "(0.2, 0.4]",
+      "n": 13,
+      "mean_p": 0.3018117690733311,
+      "realised": 0.15384615384615385,
+      "avg_ask": 0.1,
+      "pnl_cents": 70.0,
+      "calibration_gap": -0.14796561522717727
+    },
+    {
+      "p_bin": "(0.4, 0.6]",
+      "n": 1,
+      "mean_p": 0.4735608798180196,
+      "realised": 0.0,
+      "avg_ask": 0.16,
+      "pnl_cents": -16.0,
+      "calibration_gap": -0.4735608798180196
+    },
+    {
+      "p_bin": "(0.6, 0.8]",
+      "n": 3,
+      "mean_p": 0.7131733417228938,
+      "realised": 1.0,
+      "avg_ask": 0.05333333333333334,
+      "pnl_cents": 284.0,
+      "calibration_gap": 0.2868266582771062
+    },
+    {
+      "p_bin": "(0.8, 1.01]",
+      "n": 2,
+      "mean_p": 0.9597772602478931,
+      "realised": 0.5,
+      "avg_ask": 0.44999999999999996,
+      "pnl_cents": 10.0,
+      "calibration_gap": -0.4597772602478931
+    }
+  ]
+}
