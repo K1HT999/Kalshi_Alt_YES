@@ -6,7 +6,7 @@ Markets: Kalshi KXHIGHCHI- (Chicago daily-high YES/NO contracts)
 
 ---
 
-## introduciton
+## Introduciton
 
 Kalshi weather markets are an emerging market for alternative data applcations. In this strategy, Kalshi's KXHIGHCHI climate contracts are backetested on three signal layers:
 
