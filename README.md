@@ -1,10 +1,9 @@
-# Weather Data + Microstructure → Kalshi Temperature Markets
-
-**A reproducible study of two backtesting artifacts that look like alpha, and three orthogonal signal layers that survive them.**
-
+# Weather Data and Microstructure for Kalshi Temperature Market Intelligence
 Author: K. Thompson
 Sample: June 2024 – April 2026 (22 months)
-Markets: Kalshi KXHIGHCHI- (Chicago daily-high YES/NO contracts)
+
+**A study of three orthogonal signal layers derived from alternative data streams.**
+
 This project pairs three public data sources against the **KXHIGHCHI** Kalshi market (daily high temperature, Chicago):
 
 1. **NOAA HRRR** — NWP forecast of the day's high temperature
@@ -27,7 +26,7 @@ The full research paper is in [`KALTYES_Public.md`](KALTYES_Public.md).
 | **Mode B** | + HRRR wind, cloud, pressure, precip | Row-wise σ inflation on volatile days using a regime score | **+15 pp** vs A → +137% |
 | **Mode C** | + Kalshi candlestick data | Post-filter: drop NaN-data contracts; require `volume_6h ≥ 1000` | **+46 pp** vs B → +208% |
 
-The layers are **orthogonal**: Mode B uses weather features, Mode C uses market-microstructure features. They can be applied separately or stacked.
+The layers are orthogonal: Mode B uses weather features, Mode C uses market-microstructure features. They can be applied separately or stacked.
 
 ---
 
@@ -68,33 +67,13 @@ The contract-by-contract trade list — every entry timestamp, entry price, and 
 
 ---
 
-## The story in six acts
-
-**Act 1 — A backtest that looked too good.** Initial walk-forward results showed 96% win rates and +348% ROI. They were artifacts.
-
-**Act 2 — Two methodology bugs.**
-1. **Next-day contract contamination.** Each Kalshi snapshot captures both today's *and* tomorrow's contracts. A naive date-keyed join compares today's intraday observations against tomorrow's strike, manufacturing fake "already-hit" arbitrage.
-2. **Phantom-fillable cheap contracts.** Floors that *clip* `yes_ask` (e.g. 0.00 → 0.01) treat unfillable token offers as tradeable. ~31% of the post-fix universe sits in this bucket.
-
-**Act 3 — What survives.** Same-day filter + `yes_ask ≥ $0.05` floor + the Gaussian-shell calibrated EV walk-forward. 57-trade book at +73.7% ROI, permutation p = 0.005.
-
-**Act 4 — Mode A (capped book).** Calibration diagnostic shows the model is overconfident above `p̂ = 0.40`. Capping `yes_ask ≤ $0.40` excludes the unreliable regime. **48 trades, +122% ROI, Sharpe 0.34.**
-
-**Act 5 — Mode B (regime-modulated σ).** A second HRRR-data layer (wind, cloud, pressure, precip) feeds a regime score that inflates σ on volatile days. **46 trades, +137% ROI, Sharpe 0.37.** Closes the calibration gap in the (0.20, 0.40] bin from −0.15 to −0.01.
-
-**Act 6 — Mode C (microstructure filter).** Kalshi candlestick data exposes a third layer: contracts with cumulative 6-hour volume below ~1,000 are systematic underperformers regardless of model strength. Filtering them out lifts the Mode A book by +61 pp ROI and the Mode B book by +71 pp. **36-trade Mode B + Mode C book delivers +208% ROI at Sharpe 0.46.**
-
-Full narrative + statistical detail: [`KALTYES_Public.md`](KALTYES_Public.md).
-
----
-
 ## Honest accounting of Mode C
 
-Mode C is *two* effects bundled together. Be precise about each:
+Mode C is two effects bundled together. 
 
-**Effect 1 — Data-availability cleanup.** 5 of 48 Mode A trades (and 5 of 46 Mode B trades) have `NaN` microstructure data. These are contracts the 60-minute candlestick feed doesn't have an entry for at the snapshot time (mostly an old ticker-format-change issue from Sept-Oct 2024). All 5 happen to be losers. Production naturally skips trades where you can't read the order book, so this isn't a "signal" — it's a production constraint. The 43-trade / 41-trade "data-clean" baselines reflect what production actually trades.
+**Effect 1 — Data-availability cleanup.** 5 of 48 Mode A trades (and 5 of 46 Mode B trades) have `NaN` microstructure data. These are contracts that the 60-minute Kalshi candlestick feed does not have an entry for at the snapshot time. Production naturally skips trades where you can't read the order book. The 43-trade / 41-trade "data-clean" baselines reflect what production actually trades.
 
-**Effect 2 — Liquidity filter.** On the data-clean baseline, requiring `volume_6h_total ≥ 1000` drops an additional 5 trades and lifts ROI another ~31 pp (Mode A: 151% → 183%; Mode B: 171% → 208%). This is a real microstructure signal — it engages with variance in the data and survives the time split.
+**Effect 2 — Liquidity filter.** On the data-clean baseline, requiring `volume_6h_total ≥ 1000` drops an additional 5 trades and lifts ROI another ~31 pp (Mode A: 151% → 183%; Mode B: 171% → 208%).
 
 The breakdown for Mode A:
 
@@ -105,7 +84,7 @@ The breakdown for Mode A:
 | + Mode C `vol ≥ 1000` | 38 | +183% | +61 pp |
 | + Mode C tight `vol≥1000 ∧ spr≤4` | 31 | +215% | +93 pp |
 
-Same pattern for Mode B. The +29 pp from "data cleanup" is real for production (you can't trade contracts you can't see) but isn't a tradeable signal. The remaining +32 pp from the liquidity filter is the actual microstructure contribution.
+Same pattern for Mode B. The +29 pp from "data cleanup" is real for production (you can't trade contracts you can't see), but it isn't a tradeable signal. The remaining +32 pp from the liquidity filter is the actual microstructure contribution.
 
 ---
 
