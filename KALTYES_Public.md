@@ -81,6 +81,22 @@ The proposed deployment uses 12pm + 2pm. The five-snapshot broad-coverage book i
 ## 2. The Signals
 
 ### 2.1 - The Math 
+Universe predicate — same-day filter [(close_time_utc − 8h)]^{date}_{Chicago} == [as_of_utc]^{date}_{Chicago} (the projection notation means "project to Chicago local timezone, take the calendar date") plus the price band $0.05 ≤ yes_ask ≤ $0.40 (the calibration-driven cap).
+
+Point forecast — T̂ = max(H^ASOS, F^HRRR,aft) where H^ASOS is the intraday max KORD temperature observed from local midnight to the snapshot, and F^HRRR,aft is the forward-window peak from the most recent HRRR run prior to the snapshot. Beats ridge/RF/GBM at the production snapshots.
+
+Probabilistic shell — Gaussian conditional T_D | T̂ ~ N(T̂ + μ_f, σ_f²), with (μ_f, σ_f) fit per fold from the prior months' per-date residuals ε_D = T_D − T̂, and a hard floor σ_f ≥ σ_floor = 1.0°F.
+Recalibration — single-fold Platt: p̂ = sigm(a_f · logit(p_raw) + b_f) where sigm(x) = 1/(1+e^{-x}), fit by NLL minimization on training contracts. Note b_f here is the Platt intercept; not to be confused with the Kelly odds (the doc uses ω_k = (1 − a_k)/a_k to avoid collision).
+
+Trade rule — EV_k = (p̂_k − yes_ask_k) · 100 (cents per share); the per-fold threshold τ_f is chosen by argmax_τ ∈ {0,2,…,28} [pnl_train(τ) − 0.5 · losses_train(τ)]. The loss-aversion coefficient ½ is the only non-static knob in selection.
+Mode B (σ-modulator) — σ_eff,k = σ
+_f · (1 + α · regime_score_k). The regime score is the clipped mean of four normalized HRRR forward-window components: cloud cover peak (÷100), wind gust peak ((g−5)/15, clipped), surface pressure swing ((P_peak − P_low)/15, clipped), and any-precip flag. Public default α = 0.5; at α = 0 Mode B collapses to Mode A.
+
+Mode C (microstructure filter) — deterministic post-filter V^6h_k ≥ V_min = 1000 (cumulative traded volume in the 6 hours prior to the snapshot). ML on microstructure features overfits catastrophically (5-fold CV log-loss worsens by +0.286 vs p̂ alone), so the filter is hand-picked, not learned.
+
+Sharpe ceiling — under a two-point mixture model with carrier-month frequency q (the fraction of months that account for most of the headline PnL), monthly Sharpe is bounded by √(q/(1−q)). For empirical q ≈ 1/4, the bound is √(1/3) ≈ 0.58. The observed 0.46 sits inside this ceiling rather than below a higher one; reporting much above this on the 16-month sample would require a distributional change, not better calibration.
+
+Permutation test — uniform random permutation π^(b) of date labels on the predictor column only (all other columns unchanged), repeated B = 200 times. The pipeline is re-run end-to-end on each shuffled set, generating a null distribution that captures everything except the date-conditioning information in the predictor. A small p̂_perm thus isolates the predictor's contribution.
 
 ### 2.2 Mode A — calibrated baseline
 
